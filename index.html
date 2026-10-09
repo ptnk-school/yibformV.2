@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>หยิบฟอร์ม — งานแผนงานและงบประมาณ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal:#0EA5E9; --green:#10B981; --mint:#D1FAE5; --sky:#E0F2FE;
+      --dark:#0F3460; --white:#FFFFFF; --gray:#64748B;
+      --light:#F8FAFC; --border:#E2E8F0; --radius:16px;
+      --shadow:0 4px 24px rgba(14,165,233,.12);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Sarabun',sans-serif;background:var(--light);color:var(--dark);min-height:100vh;}
+
+    /* HEADER */
+    header{
+      background:linear-gradient(135deg,#0EA5E9 0%,#10B981 100%);
+      padding:28px 40px 24px;display:flex;align-items:center;
+      justify-content:space-between;flex-wrap:wrap;gap:16px;
+      position:sticky;top:0;z-index:100;
+      box-shadow:0 4px 20px rgba(14,165,233,.3);
+    }
+    .logo{display:flex;align-items:center;gap:14px;}
+    .logo-icon{width:52px;height:52px;background:rgba(255,255,255,.22);border-radius:14px;
+      display:flex;align-items:center;justify-content:center;font-size:26px;backdrop-filter:blur(6px);}
+    .logo-text h1{font-size:26px;font-weight:800;color:#fff;line-height:1.1;}
+    .logo-text p{font-size:13px;color:rgba(255,255,255,.82);margin-top:2px;}
+    .search-wrap{position:relative;flex:0 0 340px;}
+    .search-wrap input{
+      width:100%;padding:12px 46px 12px 18px;border-radius:50px;border:none;
+      font-family:'Sarabun',sans-serif;font-size:15px;
+      background:rgba(255,255,255,.95);color:var(--dark);outline:none;
+      box-shadow:0 2px 12px rgba(0,0,0,.1);
+    }
+    .search-wrap input::placeholder{color:#94a3b8;}
+    .search-wrap .search-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px;}
+    .admin-btn{
+      background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+      color:#fff;padding:9px 20px;border-radius:50px;
+      font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;
+      cursor:pointer;backdrop-filter:blur(6px);transition:all .2s;
+    }
+    .admin-btn:hover{background:rgba(255,255,255,.3);}
+
+    /* STATS */
+    .stats-bar{
+      background:var(--white);border-bottom:1px solid var(--border);
+      padding:14px 40px;display:flex;gap:32px;flex-wrap:wrap;
+    }
+    .stat-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--gray);}
+    .stat-num{font-weight:700;font-size:18px;color:var(--teal);}
+    .stat-green{color:var(--green);}
+
+    /* MAIN */
+    main{max-width:1200px;margin:0 auto;padding:32px 24px 60px;}
+
+    /* FILTER CHIPS */
+    .filter-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
+    .chip{
+      padding:8px 20px;border-radius:50px;border:2px solid var(--border);
+      background:var(--white);color:var(--gray);font-family:'Sarabun',sans-serif;
+      font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;
+    }
+    .chip:hover{border-color:var(--teal);color:var(--teal);}
+    .chip.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+    /* GRID */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px;}
+
+    /* CARD */
+    .card{
+      background:var(--white);border-radius:var(--radius);border:2px solid var(--border);
+      overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;
+    }
+    .card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(14,165,233,.2);}
+    .card-header{padding:20px 22px 16px;display:flex;align-items:flex-start;gap:14px;border-bottom:1px solid var(--border);}
+    .card-icon{width:48px;height:48px;flex-shrink:0;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+    .card-title{font-size:16px;font-weight:700;color:var(--dark);line-height:1.3;}
+    .card-num{font-size:12px;font-weight:600;margin-bottom:4px;}
+    .card-body{padding:16px 22px 20px;}
+    .section-label{font-size:13px;font-weight:700;color:var(--gray);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+
+    /* CHECKLIST */
+    .checklist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .checklist li{
+      display:flex;align-items:flex-start;gap:10px;
+      padding:10px 14px;background:var(--light);border-radius:10px;
+      border:1px solid transparent;transition:all .15s;
+    }
+    .checklist li.checked{background:var(--mint);border-color:#6EE7B7;}
+    .checklist li .cb{
+      width:20px;height:20px;flex-shrink:0;border:2px solid #CBD5E1;border-radius:6px;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:all .15s;background:#fff;margin-top:1px;
+    }
+    .checklist li.checked .cb{background:var(--green);border-color:var(--green);}
+    .checklist li.checked .cb::after{content:'✓';color:#fff;font-size:12px;font-weight:700;}
+    .item-info{flex:1;}
+    .item-name{font-size:14px;font-weight:500;color:var(--dark);cursor:pointer;user-select:none;}
+    .checklist li.checked .item-name{text-decoration:line-through;color:var(--gray);}
+    .item-note{font-size:12px;color:var(--gray);margin-top:2px;}
+
+    /* FILES */
+    .doc-files{margin-top:14px;display:flex;flex-direction:column;gap:7px;}
+    .file-btn{
+      display:flex;align-items:center;gap:10px;padding:9px 14px;
+      background:var(--sky);border:1.5px solid #BAE6FD;border-radius:10px;
+      text-decoration:none;color:var(--dark);font-size:13px;font-weight:500;transition:all .2s;
+    }
+    .file-btn:hover{background:var(--teal);border-color:var(--teal);color:#fff;transform:translateX(3px);}
+    .file-btn .file-icon{font-size:16px;}
+    .file-btn .file-label{flex:1;}
+    .badge-type{font-size:10px;font-weight:700;padding:2px 8px;border-radius:50px;background:rgba(14,165,233,.12);color:var(--teal);}
+    .file-btn:hover .badge-type{background:rgba(255,255,255,.25);color:#fff;}
+
+    /* CARD FOOTER */
+    .card-footer{padding:12px 22px 16px;display:flex;align-items:center;justify-content:space-between;}
+    .progress-wrap{flex:1;}
+    .progress-label{font-size:12px;color:var(--gray);margin-bottom:5px;}
+    .progress-bar-bg{height:6px;background:var(--border);border-radius:50px;overflow:hidden;}
+    .progress-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:50px;transition:width .3s;}
+    .reset-btn{
+      padding:6px 14px;background:transparent;border:1.5px solid var(--border);border-radius:50px;
+      font-family:'Sarabun',sans-serif;font-size:12px;color:var(--gray);
+      cursor:pointer;transition:all .2s;margin-left:12px;
+    }
+    .reset-btn:hover{border-color:#FCA5A5;color:#EF4444;}
+
+    /* NO RESULTS */
+    .no-results{text-align:center;padding:60px 20px;color:var(--gray);font-size:16px;display:none;}
+    .no-results .nr-icon{font-size:48px;margin-bottom:12px;}
+
+    /* ======= ADMIN PANEL ======= */
+    #admin-panel{
+      display:none;position:fixed;inset:0;z-index:200;
+      background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+      padding:24px;overflow-y:auto;
+    }
+    #admin-panel.open{display:flex;align-items:flex-start;justify-content:center;}
+    .admin-box{
+      background:var(--white);border-radius:var(--radius);
+      max-width:780px;width:100%;padding:32px;margin:auto;
+      box-shadow:0 20px 60px rgba(0,0,0,.2);
+    }
+    .admin-box h2{font-size:22px;font-weight:800;color:var(--dark);margin-bottom:6px;}
+    .admin-box p.sub{font-size:14px;color:var(--gray);margin-bottom:24px;}
+    .admin-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+    .admin-tab{
+      padding:8px 20px;border-radius:50px;border:2px solid var(--border);
+      background:var(--white);font-family:'Sarabun',sans-serif;
+      font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;transition:all .2s;
+    }
+    .admin-tab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+    .form-group{margin-bottom:18px;}
+    .form-group label{display:block;font-size:14px;font-weight:600;color:var(--dark);margin-bottom:7px;}
+    .form-group select,.form-group input,.form-group textarea{
+      width:100%;padding:11px 16px;border:2px solid var(--border);border-radius:10px;
+      font-family:'Sarabun',sans-serif;font-size:14px;color:var(--dark);
+      outline:none;transition:border-color .2s;background:var(--white);
+    }
+    .form-group select:focus,.form-group input:focus{border-color:var(--teal);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .btn-primary{
+      padding:12px 28px;background:linear-gradient(135deg,var(--teal),var(--green));
+      color:#fff;border:none;border-radius:50px;font-family:'Sarabun',sans-serif;
+      font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;
+    }
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px);}
+    .btn-secondary{
+      padding:12px 24px;background:var(--light);color:var(--gray);
+      border:2px solid var(--border);border-radius:50px;
+      font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;
+    }
+    .admin-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;}
+    .admin-panel-content{display:none;}
+    .admin-panel-content.active{display:block;}
+
+    /* SECTION LIST (manage tab) */
+    .section-list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto;}
+    .section-row{
+      display:flex;align-items:center;gap:12px;
+      padding:12px 14px;background:var(--light);border-radius:10px;border:1px solid var(--border);
+    }
+    .section-row .sr-icon{font-size:20px;}
+    .section-row .sr-info{flex:1;}
+    .section-row .sr-name{font-size:14px;font-weight:600;color:var(--dark);}
+    .section-row .sr-count{font-size:12px;color:var(--gray);}
+    .icon-btn{background:none;border:none;cursor:pointer;padding:5px;border-radius:6px;font-size:16px;transition:background .15s;}
+    .icon-btn:hover{background:var(--sky);}
+    .icon-btn.del:hover{background:#FEE2E2;}
+
+    /* ======= EDIT TAB ======= */
+    .edit-section-select{margin-bottom:20px;}
+    .edit-block{
+      background:var(--light);border:1px solid var(--border);
+      border-radius:12px;padding:16px;margin-bottom:16px;
+    }
+    .edit-block-title{
+      font-size:13px;font-weight:700;color:var(--gray);
+      text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;
+      display:flex;align-items:center;gap:8px;
+    }
+    /* inline editable rows */
+    .edit-row{
+      display:flex;align-items:flex-start;gap:8px;
+      padding:10px 12px;background:var(--white);border-radius:10px;
+      border:1px solid var(--border);margin-bottom:8px;
+      transition:border-color .2s;
+    }
+    .edit-row:hover{border-color:var(--teal);}
+    .edit-row-fields{flex:1;display:flex;flex-direction:column;gap:6px;}
+    .edit-input{
+      width:100%;border:1.5px solid var(--border);border-radius:8px;
+      padding:7px 12px;font-family:'Sarabun',sans-serif;font-size:14px;
+      color:var(--dark);outline:none;transition:border-color .2s;background:var(--white);
+    }
+    .edit-input:focus{border-color:var(--teal);}
+    .edit-input.small{font-size:13px;color:var(--gray);padding:5px 10px;}
+    .edit-row-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
+    .save-btn{
+      padding:5px 14px;background:var(--green);border:none;border-radius:50px;
+      color:#fff;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;
+      cursor:pointer;transition:all .2s;white-space:nowrap;
+    }
+    .save-btn:hover{opacity:.85;}
+    .del-item-btn{
+      padding:5px 10px;background:none;border:1.5px solid #FCA5A5;border-radius:50px;
+      color:#EF4444;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;
+      cursor:pointer;transition:all .2s;white-space:nowrap;
+    }
+    .del-item-btn:hover{background:#FEE2E2;}
+    .row-index{
+      font-size:11px;font-weight:700;color:var(--teal);
+      background:var(--sky);border-radius:50px;padding:2px 8px;
+      flex-shrink:0;margin-top:2px;
+    }
+    .empty-hint{font-size:13px;color:var(--gray);text-align:center;padding:16px;}
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar{width:8px;}
+    ::-webkit-scrollbar-track{background:var(--light);}
+    ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:50px;}
+    ::-webkit-scrollbar-thumb:hover{background:var(--teal);}
+
+    /* TOAST */
+    .toast{
+      position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
+      background:var(--dark);color:#fff;padding:12px 28px;
+      border-radius:50px;font-size:15px;font-weight:600;
+      z-index:999;transition:transform .3s;box-shadow:0 4px 20px rgba(0,0,0,.25);
+    }
+    .toast.show{transform:translateX(-50%) translateY(0);}
+
+    @media(max-width:700px){
+      header{padding:18px 20px;}
+      .search-wrap{flex:0 0 100%;}
+      main{padding:20px 16px 50px;}
+      .stats-bar{padding:12px 20px;gap:20px;}
+      .grid{grid-template-columns:1fr;}
+      .form-row{grid-template-columns:1fr;}
+      .edit-row{flex-direction:column;}
+      .edit-row-actions{flex-direction:row;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">📋</div>
+    <div class="logo-text">
+      <h1>หยิบฟอร์ม</h1>
+      <p>งานแผนงานและงบประมาณ</p>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="ค้นหาเอกสาร, ฟอร์ม, หมวดหมู่..." oninput="filterAll()" />
+    <span class="search-icon">🔍</span>
+  </div>
+  <button class="admin-btn" onclick="openAdmin()">⚙️ จัดการฟอร์ม</button>
+</header>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-num" id="stat-sections">11</span><span>หมวดหมู่</span></div>
+  <div class="stat-item"><span class="stat-num stat-green" id="stat-docs">—</span><span>เอกสาร/ฟอร์ม</span></div>
+  <div class="stat-item">🟢 พร้อมดาวน์โหลด</div>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div class="filter-chips" id="filterChips"></div>
+  <div class="grid" id="cardsGrid"></div>
+  <div class="no-results" id="noResults">
+    <div class="nr-icon">🔎</div>
+    ไม่พบเอกสารที่ค้นหา<br />ลองใช้คำอื่น หรือเลือกหมวดหมู่ด้านบน
+  </div>
+</main>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" onclick="closeAdminOutside(event)">
+  <div class="admin-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <h2>⚙️ จัดการฟอร์ม</h2>
+      <button onclick="closeAdmin()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray)">✕</button>
+    </div>
+    <p class="sub">เพิ่ม / แก้ไข / ลบ หมวดหมู่และรายการเอกสารได้จากที่นี่</p>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('add-section',this)">+ เพิ่มหมวดหมู่</button>
+      <button class="admin-tab" onclick="switchTab('add-doc',this)">+ เพิ่มเอกสาร</button>
+      <button class="admin-tab" onclick="switchTab('edit-items',this)">✏️ แก้ไขรายการ</button>
+      <button class="admin-tab" onclick="switchTab('manage',this)">📋 จัดการหมวด</button>
+    </div>
+
+    <!-- TAB: ADD SECTION -->
+    <div class="admin-panel-content active" id="tab-add-section">
+      <div class="form-group"><label>ชื่อหมวดหมู่ใหม่</label><input type="text" id="new-section-name" placeholder="เช่น ค่าใช้จ่ายฝึกอบรม" /></div>
+      <div class="form-row">
+        <div class="form-group"><label>ไอคอน (emoji)</label><input type="text" id="new-section-icon" placeholder="🗂️" maxlength="4" /></div>
+        <div class="form-group"><label>สีการ์ด</label>
+          <select id="new-section-color">
+            <option value="teal">🔵 ฟ้า-เขียว</option>
+            <option value="blue">💙 น้ำเงิน</option>
+            <option value="green">💚 เขียว</option>
+            <option value="purple">💜 ม่วง</option>
+            <option value="orange">🟠 ส้ม</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>คำอธิบายสั้น (ไม่บังคับ)</label><input type="text" id="new-section-desc" placeholder="คำอธิบายหมวดหมู่" /></div>
+      <div class="admin-actions">
+        <button class="btn-primary" onclick="addSection()">✅ เพิ่มหมวดหมู่</button>
+        <button class="btn-secondary" onclick="clearSectionForm()">ล้าง</button>
+      </div>
+    </div>
+
+    <!-- TAB: ADD DOC -->
+    <div class="admin-panel-content" id="tab-add-doc">
+      <div class="form-group"><label>หมวดหมู่</label><select id="doc-section"></select></div>
+      <div class="form-group"><label>ชื่อรายการเช็คลิสต์</label><input type="text" id="doc-check-name" placeholder="เช่น ใบสำคัญรับเงิน (ตัวจริง)" /></div>
+      <div class="form-group"><label>หมายเหตุ (ไม่บังคับ)</label><input type="text" id="doc-check-note" placeholder="เช่น พร้อมลายเซ็นต์ผู้รับเงิน" /></div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;" />
+      <p style="font-size:13px;color:var(--gray);margin-bottom:14px;">📎 ไฟล์ดาวน์โหลด (ใส่ลิงก์ Google Drive)</p>
+      <div class="form-row">
+        <div class="form-group"><label>ชื่อไฟล์</label><input type="text" id="doc-file-name" placeholder="ใบสำคัญรับเงิน.pdf" /></div>
+        <div class="form-group"><label>ประเภทไฟล์</label>
+          <select id="doc-file-type">
+            <option value="PDF">PDF</option><option value="DOCX">DOCX</option>
+            <option value="XLS">XLS/XLSX</option><option value="DOC">DOC</option><option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>ลิงก์ Google Drive</label><input type="url" id="doc-file-url" placeholder="https://drive.google.com/file/d/.../view" /></div>
+      <div class="admin-actions">
+        <button class="btn-primary" onclick="addDoc()">✅ เพิ่มเอกสาร</button>
+        <button class="btn-secondary" onclick="clearDocForm()">ล้าง</button>
+      </div>
+    </div>
+
+    <!-- TAB: EDIT ITEMS -->
+    <div class="admin-panel-content" id="tab-edit-items">
+      <div class="form-group edit-section-select">
+        <label>เลือกหมวดหมู่ที่ต้องการแก้ไข</label>
+        <select id="edit-section-select" onchange="renderEditItems()"></select>
+      </div>
+      <div id="edit-items-content"></div>
+    </div>
+
+    <!-- TAB: MANAGE -->
+    <div class="admin-panel-content" id="tab-manage">
+      <div class="section-list" id="admin-section-list"></div>
+      <div class="admin-actions" style="margin-top:16px;">
+        <button class="btn-secondary" onclick="resetToDefault()" style="border-color:#FCA5A5;color:#EF4444;">🔄 รีเซ็ตกลับค่าเริ่มต้น</button>
+        <button class="btn-primary" onclick="exportData()">📥 Export JSON</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== COLOR MAP ===================== */
+const COLOR_MAP = {
+  teal:  {bg:'#E0F7F4',icon:'#0D9488',border:'#CCFBF1'},
+  blue:  {bg:'#E0F2FE',icon:'#0EA5E9',border:'#BAE6FD'},
+  green: {bg:'#D1FAE5',icon:'#10B981',border:'#6EE7B7'},
+  purple:{bg:'#EDE9FE',icon:'#7C3AED',border:'#C4B5FD'},
+  orange:{bg:'#FFF7ED',icon:'#F97316',border:'#FED7AA'},
+};
+const FILE_ICONS={PDF:'📕',DOCX:'📘',DOC:'📘',XLS:'📗',XLSX:'📗','อื่นๆ':'📎'};
+
+/* ===================== DEFAULT DATA ===================== */
+const DEFAULT_DATA=[
+  {id:1,name:'ค่าอาหาร (จัดกิจกรรม)',icon:'🍱',color:'teal',
+   desc:'เอกสารประกอบการเบิกจ่ายค่าอาหารในการจัดกิจกรรม',
+   checklist:[
+    {name:'บันทึกข้อความขออนุมัติจัดกิจกรรม',note:'พร้อมลายเซ็นต์ผู้บริหารอนุมัติ'},
+    {name:'คำสั่ง / โครงการ',note:''},
+    {name:'ใบสำคัญรับเงิน (ตัวจริง)',note:'พร้อมลายเซ็นต์ผู้รับเงิน'},
+    {name:'แบบรับเงิน KTB Corporate',note:'กรอกเลขบัญชีให้ถูกต้อง'},
+    {name:'ใบเสร็จรับเงิน / ใบส่งสินค้า',note:'จากร้านค้า ตัวจริง'},
+    {name:'รายชื่อผู้เข้าร่วมกิจกรรม',note:'พร้อมลายเซ็นต์'},
+   ],
+   files:[
+    {name:'ใบสำคัญรับเงิน.pdf',type:'PDF',url:'#'},
+    {name:'ใบสำคัญรับเงิน.docx',type:'DOCX',url:'#'},
+    {name:'แบบรับเงิน KTB Corporate.pdf',type:'PDF',url:'#'},
+   ]},
+  {id:2,name:'ค่าวิทยากร (จัดกิจกรรม)',icon:'🎤',color:'blue',
+   desc:'เอกสารประกอบการเบิกจ่ายค่าตอบแทนวิทยากร',
+   checklist:[
+    {name:'บันทึกข้อความขออนุมัติจัดกิจกรรม',note:''},
+    {name:'คำสั่ง / โครงการ',note:''},
+    {name:'ใบสำคัญรับเงิน สำหรับวิทยากร (ตัวจริง)',note:'กรอกข้อมูลวิทยากรให้ครบ'},
+    {name:'แบบรับเงิน KTB Corporate',note:'กรอกเลขบัญชีวิทยากร'},
+    {name:'สำเนาบัตรประชาชนวิทยากร',note:'รับรองสำเนาถูกต้อง'},
+   ],
+   files:[
+    {name:'ใบสำคัญรับเงิน สำหรับวิทยากร.pdf',type:'PDF',url:'#'},
+    {name:'แบบรับเงิน KTB Corporate.pdf',type:'PDF',url:'#'},
+   ]},
+  {id:3,name:'หลักฐานการจัดซื้อ',icon:'🛒',color:'green',
+   desc:'เอกสารประกอบการจัดซื้อวัสดุ/ครุภัณฑ์',
+   checklist:[
+    {name:'บันทึกข้อความขออนุมัติจัดซื้อ',note:''},
+    {name:'ฟอร์มใบสั่งซื้อ',note:'ลงนามผู้มีอำนาจอนุมัติ'},
+    {name:'ใบเสนอราคา (อย่างน้อย 3 ราย)',note:'สำหรับวงเงินที่กำหนด'},
+    {name:'ใบส่งของ / ใบเสร็จรับเงิน',note:'ตัวจริงจากผู้ขาย'},
+    {name:'ใบตรวจรับพัสดุ',note:'พร้อมลายเซ็นต์คณะกรรมการ'},
+   ],
+   files:[{name:'ฟอร์มใบสั่งซื้อ.xls',type:'XLS',url:'#'}]},
+  {id:4,name:'หลักฐานการจัดจ้าง',icon:'🔨',color:'orange',
+   desc:'เอกสารประกอบการจัดจ้างบริการ/ก่อสร้าง',
+   checklist:[
+    {name:'บันทึกข้อความขออนุมัติจัดจ้าง',note:''},
+    {name:'ฟอร์มใบสั่งจ้าง',note:'ลงนามผู้มีอำนาจอนุมัติ'},
+    {name:'ใบเสนอราคา',note:'จากผู้รับจ้าง'},
+    {name:'ใบส่งมอบงานจ้าง',note:'พร้อมลายเซ็นต์คณะกรรมการตรวจรับ'},
+    {name:'ใบสำคัญรับเงิน (ตัวจริง)',note:''},
+   ],
+   files:[
+    {name:'ฟอร์มใบสั่งจ้าง.xls',type:'XLS',url:'#'},
+    {name:'แบบฟอร์ม ใบส่งมอบงานจ้าง.pdf',type:'PDF',url:'#'},
+    {name:'ใบสำคัญรับเงิน.pdf',type:'PDF',url:'#'},
+    {name:'ใบสำคัญรับเงิน.docx',type:'DOCX',url:'#'},
+   ]},
+  {id:5,name:'การเดินทางไปราชการ',icon:'✈️',color:'purple',
+   desc:'เอกสารเบิกค่าใช้จ่ายในการเดินทางไปราชการ',
+   checklist:[
+    {name:'คำสั่งไปราชการ',note:'ลงนามผู้บริหารอนุมัติ'},
+    {name:'ใบเบิกค่าเดินทางไปราชการ',note:'กรอกรายละเอียดให้ครบ'},
+    {name:'ใบเสร็จรับเงิน / ตั๋ว',note:'ตัวจริง'},
+    {name:'ใบรับรองแทนใบเสร็จรับเงิน',note:'กรณีไม่มีใบเสร็จ'},
+    {name:'แผนที่การเดินทาง (กรณีใช้รถส่วนตัว)',note:''},
+   ],
+   files:[
+    {name:'ใบเบิกค่าเดินทางไปราชการสำหรับครู.pdf',type:'PDF',url:'#'},
+    {name:'ใบเบิกค่าเดินทางไปราชการสำหรับนักเรียน.pdf',type:'PDF',url:'#'},
+    {name:'ใบรับรองแทนใบเสร็จรับเงิน.pdf',type:'PDF',url:'#'},
+   ]},
+  {id:6,name:'ค่ารักษาพยาบาล',icon:'🏥',color:'teal',
+   desc:'เอกสารเบิกค่ารักษาพยาบาลของข้าราชการ',
+   checklist:[
+    {name:'ใบเบิกค่ารักษาพยาบาล',note:'กรอกให้ครบทุกช่อง'},
+    {name:'ใบเสร็จรับเงินจากสถานพยาบาล',note:'ตัวจริง'},
+    {name:'ใบรับรองแพทย์ (ถ้ามี)',note:''},
+    {name:'แบบรับเงิน KTB Corporate',note:'กรอกเลขบัญชีตัวเอง'},
+   ],
+   files:[
+    {name:'ใบเบิกค่ารักษาพยาบาล.pdf',type:'PDF',url:'#'},
+    {name:'แบบรับเงิน KTB Corporate.pdf',type:'PDF',url:'#'},
+   ]},
+  {id:7,name:'ค่าการศึกษาบุตร',icon:'🎓',color:'blue',
+   desc:'เอกสารเบิกค่าการศึกษาบุตรของข้าราชการ',
+   checklist:[
+    {name:'ใบเบิกค่าการศึกษาบุตร',note:'กรอกข้อมูลบุตรให้ครบ'},
+    {name:'ใบเสร็จรับเงินค่าเล่าเรียน',note:'ตัวจริงจากสถานศึกษา'},
+    {name:'หนังสือรับรองการศึกษา',note:'จากสถานศึกษา'},
+    {name:'สำเนาทะเบียนบ้าน',note:'รับรองสำเนาถูกต้อง'},
+    {name:'แบบรับเงิน KTB Corporate',note:''},
+   ],
+   files:[
+    {name:'ใบเบิกการศึกษาบุตร.pdf',type:'PDF',url:'#'},
+    {name:'แบบรับเงิน KTB Corporate.pdf',type:'PDF',url:'#'},
+   ]},
+  {id:8,name:'ชมรมผู้ปกครองและครู',icon:'👨‍👩‍👧',color:'green',
+   desc:'เอกสารขออนุมัติใช้เงินชมรมผู้ปกครองและครู',
+   checklist:[
+    {name:'บันทึกข้อความขออนุมัติใช้เงินชมรม',note:'ลงนามประธานชมรม'},
+    {name:'รายการค่าใช้จ่ายโดยละเอียด',note:''},
+    {name:'ใบเสร็จรับเงิน / ใบส่งสินค้า',note:'ตัวจริง'},
+    {name:'รายงานผลการดำเนินงาน (หลังจัด)',note:''},
+   ],
+   files:[{name:'บันทึกข้อความขออนุมัติใช้เงินชมรม.pdf',type:'PDF',url:'#'}]},
+  {id:9,name:'ขอใช้-ยืมเงินสวัสดิการ',icon:'💰',color:'orange',
+   desc:'เอกสารขอใช้และยืมเงินกองทุนสวัสดิการโรงเรียน',
+   checklist:[
+    {name:'ใบขอใช้เงินสวัสดิการโรงเรียน',note:'กรอกเหตุผลให้ชัดเจน'},
+    {name:'สำเนาบัตรประชาชน',note:'รับรองสำเนาถูกต้อง'},
+    {name:'เอกสารประกอบคำขอ',note:'เช่น ใบเสร็จ, ใบรับรองแพทย์'},
+   ],
+   files:[
+    {name:'ใบขอใช้เงินสวัสดิการโรงเรียน.doc',type:'DOC',url:'#'},
+    {name:'ใบขอใช้เงินสวัสดิการโรงเรียน.pdf',type:'PDF',url:'#'},
+    {name:'ใบยืมเงินสวัสดิการโรงเรียน.doc',type:'DOC',url:'#'},
+    {name:'ใบยืมเงินสวัสดิการโรงเรียน.pdf',type:'PDF',url:'#'},
+   ]},
+  {id:10,name:'ขออนุมัติใช้เงินในโครงการ',icon:'📊',color:'purple',
+   desc:'เอกสารขออนุมัติใช้จ่ายเงินตามแผนงาน/โครงการ',
+   checklist:[
+    {name:'บันทึกข้อความขออนุมัติใช้แผน',note:'ระบุรหัสโครงการ'},
+    {name:'แผนปฏิบัติการ / โครงการ',note:'ที่ได้รับการอนุมัติแล้ว'},
+    {name:'รายละเอียดค่าใช้จ่าย',note:'ตามหมวดงบประมาณที่กำหนด'},
+    {name:'แบบฟอร์มขอเปลี่ยนแปลงรายการวัสดุ (ถ้ามี)',note:''},
+   ],
+   files:[
+    {name:'บันทึกข้อความขออนุมัติใช้แผน.pdf',type:'PDF',url:'#'},
+    {name:'บันทึกข้อความขออนุมัติใช้แผน.docx',type:'DOCX',url:'#'},
+    {name:'แบบฟอร์มขอเปลี่ยนแปลงรายการวัสดุ.pdf',type:'PDF',url:'#'},
+    {name:'แบบฟอร์มขอเปลี่ยนแปลงรายการวัสดุ.docx',type:'DOCX',url:'#'},
+   ]},
+  {id:11,name:'ขอซ่อมครุภัณฑ์',icon:'🔧',color:'teal',
+   desc:'เอกสารขอซ่อมแซมครุภัณฑ์ของโรงเรียน',
+   checklist:[
+    {name:'บันทึกข้อความขอซ่อมครุภัณฑ์',note:'ระบุรายละเอียดครุภัณฑ์'},
+    {name:'รายการครุภัณฑ์พร้อมหมายเลขทะเบียน',note:''},
+    {name:'ใบเสนอราคาค่าซ่อม',note:'จากร้านซ่อม'},
+    {name:'ใบส่งมอบงาน (หลังซ่อมเสร็จ)',note:''},
+   ],
+   files:[
+    {name:'บันทึกข้อความขอซ่อมครุภัณฑ์.pdf',type:'PDF',url:'#'},
+    {name:'บันทึกข้อความขอซ่อมครุภัณฑ์.docx',type:'DOCX',url:'#'},
+   ]},
+];
+
+/* ===================== STATE ===================== */
+let data=JSON.parse(localStorage.getItem('yibForm_data')||'null')||JSON.parse(JSON.stringify(DEFAULT_DATA));
+let activeTag='all', searchQ='';
+function saveData(){localStorage.setItem('yibForm_data',JSON.stringify(data));}
+
+/* ===================== RENDER CARDS ===================== */
+function render(){
+  const grid=document.getElementById('cardsGrid');
+  const noRes=document.getElementById('noResults');
+  const chips=document.getElementById('filterChips');
+  chips.innerHTML=`<button class="chip ${activeTag==='all'?'active':''}" onclick="filterByTag('all',this)">ทั้งหมด</button>`;
+  data.forEach(sec=>{
+    chips.innerHTML+=`<button class="chip ${activeTag===String(sec.id)?'active':''}" onclick="filterByTag('${sec.id}',this)">${sec.icon} ${sec.name}</button>`;
+  });
+  const q=searchQ.trim().toLowerCase();
+  let sections=data;
+  if(activeTag!=='all') sections=sections.filter(s=>String(s.id)===activeTag);
+  if(q) sections=sections.filter(s=>
+    s.name.toLowerCase().includes(q)||(s.desc||'').toLowerCase().includes(q)||
+    s.checklist.some(c=>c.name.toLowerCase().includes(q))||
+    s.files.some(f=>f.name.toLowerCase().includes(q))
+  );
+  if(sections.length===0){grid.innerHTML='';noRes.style.display='block';}
+  else{noRes.style.display='none';grid.innerHTML=sections.map(s=>renderCard(s)).join('');}
+  document.getElementById('stat-sections').textContent=data.length;
+  document.getElementById('stat-docs').textContent=data.reduce((a,s)=>a+s.files.length,0);
+}
+
+function renderCard(sec){
+  const c=COLOR_MAP[sec.color]||COLOR_MAP.teal;
+  const checkItems=sec.checklist.map((item,idx)=>`
+    <li id="cli-${sec.id}-${idx}">
+      <div class="cb" onclick="toggleCheck(${sec.id},${idx})"></div>
+      <div class="item-info" onclick="toggleCheck(${sec.id},${idx})">
+        <div class="item-name">${item.name}</div>
+        ${item.note?`<div class="item-note">💡 ${item.note}</div>`:''}
+      </div>
+    </li>`).join('');
+  const fileItems=sec.files.map(f=>`
+    <a class="file-btn" href="${f.url||'#'}" target="_blank" rel="noopener">
+      <span class="file-icon">${FILE_ICONS[f.type]||'📎'}</span>
+      <span class="file-label">${f.name}</span>
+      <span class="badge-type">${f.type}</span>
+    </a>`).join('');
+  const total=sec.checklist.length;
+  return `
+  <div class="card" id="card-${sec.id}">
+    <div class="card-header" style="background:${c.bg};border-bottom-color:${c.border}">
+      <div class="card-icon" style="background:${c.border}"><span style="font-size:24px">${sec.icon}</span></div>
+      <div>
+        <div class="card-num" style="color:${c.icon}">หมวด ${String(sec.id).padStart(2,'0')}</div>
+        <div class="card-title">${sec.name}</div>
+        ${sec.desc?`<div style="font-size:12px;color:var(--gray);margin-top:3px">${sec.desc}</div>`:''}
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section-label">✅ เช็คลิสต์เอกสาร</div>
+      <ul class="checklist" id="chk-${sec.id}">${checkItems}</ul>
+      ${sec.files.length>0?`<div class="section-label" style="margin-top:14px">📥 ดาวน์โหลดฟอร์ม</div><div class="doc-files">${fileItems}</div>`:''}
+    </div>
+    <div class="card-footer">
+      <div class="progress-wrap">
+        <div class="progress-label" id="prog-label-${sec.id}">0 / ${total} รายการ</div>
+        <div class="progress-bar-bg"><div class="progress-bar" id="prog-${sec.id}" style="width:0%"></div></div>
+      </div>
+      <button class="reset-btn" onclick="resetCard(${sec.id})">รีเซ็ต</button>
+    </div>
+  </div>`;
+}
+
+/* ===================== CHECKLIST ===================== */
+function toggleCheck(secId,idx){
+  const li=document.getElementById(`cli-${secId}-${idx}`);
+  li.classList.toggle('checked');
+  updateProgress(secId);
+}
+function updateProgress(secId){
+  const sec=data.find(s=>s.id===secId);if(!sec)return;
+  const total=sec.checklist.length;
+  const checked=document.querySelectorAll(`#chk-${secId} li.checked`).length;
+  const pct=total?Math.round(checked/total*100):0;
+  const bar=document.getElementById(`prog-${secId}`);
+  const lbl=document.getElementById(`prog-label-${secId}`);
+  if(bar)bar.style.width=pct+'%';
+  if(lbl)lbl.textContent=`${checked} / ${total} รายการ`;
+}
+function resetCard(secId){
+  document.querySelectorAll(`#chk-${secId} li`).forEach(li=>li.classList.remove('checked'));
+  updateProgress(secId);
+}
+
+/* ===================== SEARCH & FILTER ===================== */
+function filterAll(){searchQ=document.getElementById('searchInput').value;render();}
+function filterByTag(tag,el){
+  activeTag=tag;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');render();
+}
+
+/* ===================== ADMIN PANEL ===================== */
+function openAdmin(){
+  document.getElementById('admin-panel').classList.add('open');
+  populateDocSectionSelect();
+  populateEditSectionSelect();
+  renderAdminSectionList();
+}
+function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');}
+function closeAdminOutside(e){if(e.target===document.getElementById('admin-panel'))closeAdmin();}
+
+function switchTab(id,el){
+  document.querySelectorAll('.admin-panel-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  if(id==='add-doc')populateDocSectionSelect();
+  if(id==='edit-items'){populateEditSectionSelect();renderEditItems();}
+  if(id==='manage')renderAdminSectionList();
+}
+
+function populateDocSectionSelect(){
+  const sel=document.getElementById('doc-section');
+  sel.innerHTML=data.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+}
+
+function populateEditSectionSelect(){
+  const sel=document.getElementById('edit-section-select');
+  const prev=sel.value;
+  sel.innerHTML=data.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+  if(prev&&data.find(s=>String(s.id)===prev))sel.value=prev;
+}
+
+/* --------- EDIT ITEMS TAB --------- */
+function renderEditItems(){
+  const secId=parseInt(document.getElementById('edit-section-select').value);
+  const sec=data.find(s=>s.id===secId);
+  const container=document.getElementById('edit-items-content');
+  if(!sec){container.innerHTML='';return;}
+
+  /* CHECKLIST BLOCK */
+  let checkHtml='';
+  if(sec.checklist.length===0){
+    checkHtml=`<div class="empty-hint">ยังไม่มีรายการเช็คลิสต์</div>`;
+  } else {
+    checkHtml=sec.checklist.map((item,idx)=>`
+      <div class="edit-row" id="crow-${secId}-${idx}">
+        <span class="row-index">${idx+1}</span>
+        <div class="edit-row-fields">
+          <input class="edit-input" id="cname-${secId}-${idx}" value="${escHtml(item.name)}" placeholder="ชื่อรายการ" />
+          <input class="edit-input small" id="cnote-${secId}-${idx}" value="${escHtml(item.note||'')}" placeholder="หมายเหตุ (ไม่บังคับ)" />
+        </div>
+        <div class="edit-row-actions">
+          <button class="save-btn" onclick="saveCheckItem(${secId},${idx})">💾 บันทึก</button>
+          <button class="del-item-btn" onclick="delCheckItem(${secId},${idx})">🗑️ ลบ</button>
+        </div>
+      </div>`).join('');
+  }
+
+  /* FILES BLOCK */
+  let fileHtml='';
+  if(sec.files.length===0){
+    fileHtml=`<div class="empty-hint">ยังไม่มีไฟล์ดาวน์โหลด</div>`;
+  } else {
+    const typeOptions=(sel)=>['PDF','DOCX','DOC','XLS','อื่นๆ'].map(t=>`<option value="${t}" ${sel===t?'selected':''}>${t}</option>`).join('');
+    fileHtml=sec.files.map((f,idx)=>`
+      <div class="edit-row" id="frow-${secId}-${idx}">
+        <span class="row-index" style="background:#D1FAE5;color:#10B981;">${idx+1}</span>
+        <div class="edit-row-fields">
+          <input class="edit-input" id="fname-${secId}-${idx}" value="${escHtml(f.name)}" placeholder="ชื่อไฟล์" />
+          <div style="display:flex;gap:8px;">
+            <select class="edit-input small" id="ftype-${secId}-${idx}" style="flex:0 0 110px;">${typeOptions(f.type)}</select>
+            <input class="edit-input small" id="furl-${secId}-${idx}" value="${escHtml(f.url||'')}" placeholder="ลิงก์ Google Drive" />
+          </div>
+        </div>
+        <div class="edit-row-actions">
+          <button class="save-btn" onclick="saveFileItem(${secId},${idx})">💾 บันทึก</button>
+          <button class="del-item-btn" onclick="delFileItem(${secId},${idx})">🗑️ ลบ</button>
+        </div>
+      </div>`).join('');
+  }
+
+  container.innerHTML=`
+    <div class="edit-block">
+      <div class="edit-block-title">✅ รายการเช็คลิสต์ <span style="background:var(--sky);color:var(--teal);padding:2px 10px;border-radius:50px;font-size:12px;">${sec.checklist.length} รายการ</span></div>
+      ${checkHtml}
+    </div>
+    <div class="edit-block">
+      <div class="edit-block-title">📥 ไฟล์ดาวน์โหลด <span style="background:#D1FAE5;color:#10B981;padding:2px 10px;border-radius:50px;font-size:12px;">${sec.files.length} ไฟล์</span></div>
+      ${fileHtml}
+    </div>`;
+}
+
+function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* save checklist item */
+function saveCheckItem(secId,idx){
+  const sec=data.find(s=>s.id===secId);if(!sec)return;
+  const name=document.getElementById(`cname-${secId}-${idx}`).value.trim();
+  const note=document.getElementById(`cnote-${secId}-${idx}`).value.trim();
+  if(!name){showToast('⚠️ กรุณากรอกชื่อรายการ');return;}
+  sec.checklist[idx]={name,note};
+  saveData();render();renderEditItems();
+  showToast('✅ บันทึกรายการเช็คลิสต์แล้ว');
+}
+
+/* delete checklist item */
+function delCheckItem(secId,idx){
+  const sec=data.find(s=>s.id===secId);if(!sec)return;
+  if(!confirm(`ลบ "${sec.checklist[idx].name}" ใช่ไหม?`))return;
+  sec.checklist.splice(idx,1);
+  saveData();render();renderEditItems();
+  showToast('🗑️ ลบรายการเช็คลิสต์แล้ว');
+}
+
+/* save file item */
+function saveFileItem(secId,idx){
+  const sec=data.find(s=>s.id===secId);if(!sec)return;
+  const name=document.getElementById(`fname-${secId}-${idx}`).value.trim();
+  const type=document.getElementById(`ftype-${secId}-${idx}`).value;
+  const url=document.getElementById(`furl-${secId}-${idx}`).value.trim();
+  if(!name){showToast('⚠️ กรุณากรอกชื่อไฟล์');return;}
+  sec.files[idx]={name,type,url:url||'#'};
+  saveData();render();renderEditItems();
+  showToast('✅ บันทึกไฟล์ดาวน์โหลดแล้ว');
+}
+
+/* delete file item */
+function delFileItem(secId,idx){
+  const sec=data.find(s=>s.id===secId);if(!sec)return;
+  if(!confirm(`ลบไฟล์ "${sec.files[idx].name}" ใช่ไหม?`))return;
+  sec.files.splice(idx,1);
+  saveData();render();renderEditItems();
+  showToast('🗑️ ลบไฟล์ดาวน์โหลดแล้ว');
+}
+
+/* --------- ADD SECTION --------- */
+function addSection(){
+  const name=document.getElementById('new-section-name').value.trim();
+  const icon=document.getElementById('new-section-icon').value.trim()||'📁';
+  const color=document.getElementById('new-section-color').value;
+  const desc=document.getElementById('new-section-desc').value.trim();
+  if(!name){showToast('⚠️ กรุณากรอกชื่อหมวดหมู่');return;}
+  const newId=data.length?Math.max(...data.map(s=>s.id))+1:1;
+  data.push({id:newId,name,icon,color,desc,checklist:[],files:[]});
+  saveData();render();renderAdminSectionList();
+  showToast('✅ เพิ่มหมวดหมู่ "'+name+'" แล้ว');
+  clearSectionForm();
+}
+function clearSectionForm(){
+  ['new-section-name','new-section-icon','new-section-desc'].forEach(id=>document.getElementById(id).value='');
+}
+
+/* --------- ADD DOC --------- */
+function addDoc(){
+  const secId=parseInt(document.getElementById('doc-section').value);
+  const checkName=document.getElementById('doc-check-name').value.trim();
+  const checkNote=document.getElementById('doc-check-note').value.trim();
+  const fileName=document.getElementById('doc-file-name').value.trim();
+  const fileType=document.getElementById('doc-file-type').value;
+  const fileUrl=document.getElementById('doc-file-url').value.trim();
+  const sec=data.find(s=>s.id===secId);
+  if(!sec){showToast('⚠️ ไม่พบหมวดหมู่');return;}
+  if(!checkName){showToast('⚠️ กรุณากรอกชื่อรายการ');return;}
+  sec.checklist.push({name:checkName,note:checkNote});
+  if(fileName)sec.files.push({name:fileName,type:fileType,url:fileUrl||'#'});
+  saveData();render();
+  showToast('✅ เพิ่มเอกสารใน "'+sec.name+'" แล้ว');
+  clearDocForm();
+}
+function clearDocForm(){
+  ['doc-check-name','doc-check-note','doc-file-name','doc-file-url'].forEach(id=>document.getElementById(id).value='');
+}
+
+/* --------- MANAGE SECTIONS --------- */
+function renderAdminSectionList(){
+  const list=document.getElementById('admin-section-list');
+  list.innerHTML=data.map(sec=>`
+    <div class="section-row">
+      <span class="sr-icon">${sec.icon}</span>
+      <div class="sr-info">
+        <div class="sr-name">${sec.name}</div>
+        <div class="sr-count">📋 ${sec.checklist.length} รายการ &nbsp;|&nbsp; 📥 ${sec.files.length} ไฟล์</div>
+      </div>
+      <button class="icon-btn del" onclick="deleteSection(${sec.id})" title="ลบหมวด">🗑️</button>
+    </div>`).join('');
+}
+
+function deleteSection(secId){
+  const sec=data.find(s=>s.id===secId);if(!sec)return;
+  if(!confirm(`ลบหมวด "${sec.name}" ใช่ไหม?`))return;
+  data=data.filter(s=>s.id!==secId);
+  saveData();render();renderAdminSectionList();
+  showToast('🗑️ ลบหมวด "'+sec.name+'" แล้ว');
+}
+
+function resetToDefault(){
+  if(!confirm('รีเซ็ตข้อมูลทั้งหมดกลับค่าเริ่มต้นใช่ไหม?'))return;
+  localStorage.removeItem('yibForm_data');
+  data=JSON.parse(JSON.stringify(DEFAULT_DATA));
+  saveData();render();renderAdminSectionList();
+  showToast('🔄 รีเซ็ตเรียบร้อย');
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='yibform_data.json';a.click();
+}
+
+/* --------- TOAST --------- */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+/* ===================== INIT ===================== */
+render();
+</script>
+</body>
+</html>
